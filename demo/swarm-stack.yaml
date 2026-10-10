@@ -1,0 +1,54 @@
+version: "3.9"
+
+services:
+  database:
+    image: postgres:18.4-alpine
+    environment:
+      POSTGRES_DB: platform
+      POSTGRES_USER: platform
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_password
+    volumes:
+      - postgres_data:/var/lib/postgresql
+      - ./database/001-init.sql:/docker-entrypoint-initdb.d/001-init.sql:ro
+    networks:
+      - data
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+  api:
+    image: ${DEMO_IMAGE:?Set DEMO_IMAGE before deploying}
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      DB_HOST: "${DEMO_STACK:?Set DEMO_STACK}_database"
+      DB_NAME: platform
+      DB_USER: platform
+      DB_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_password
+    networks:
+      - edge
+      - data
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+networks:
+  edge:
+    external: true
+    name: ${DEMO_EDGE_NETWORK:?Set DEMO_EDGE_NETWORK before deploying}
+  data:
+    driver: overlay
+    internal: true
+
+volumes:
+  postgres_data:
+
+secrets:
+  db_password:
+    external: true
+    name: ${DEMO_SECRET:?Set DEMO_SECRET before deploying}

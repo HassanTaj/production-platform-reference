@@ -1,0 +1,69 @@
+name: production-platform-reference-demo
+
+services:
+  gateway:
+    image: traefik:v3.7.14
+    command:
+      - --entrypoints.web.address=:80
+      - --providers.file.directory=/etc/traefik/dynamic
+      - --providers.file.watch=true
+      - --api.dashboard=false
+      - --log.level=INFO
+    ports:
+      - "127.0.0.1:${DEMO_HTTP_PORT:-8080}:80"
+    volumes:
+      - ./traefik:/etc/traefik/dynamic:ro
+    networks:
+      - edge
+    depends_on:
+      api:
+        condition: service_started
+
+  api:
+    build:
+      context: ./api
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      DB_HOST: database
+      DB_NAME: platform
+      DB_USER: platform
+      DB_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_password
+    networks:
+      - edge
+      - data
+    depends_on:
+      database:
+        condition: service_healthy
+
+  database:
+    image: postgres:18.4-alpine
+    environment:
+      POSTGRES_DB: platform
+      POSTGRES_USER: platform
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_password
+    volumes:
+      - postgres_data:/var/lib/postgresql
+      - ./database/001-init.sql:/docker-entrypoint-initdb.d/001-init.sql:ro
+    networks:
+      - data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U platform -d platform"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+secrets:
+  db_password:
+    file: ./secrets/db_password.txt
+
+volumes:
+  postgres_data:
+
+networks:
+  edge:
+  data:
+    internal: true

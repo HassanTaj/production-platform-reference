@@ -1,0 +1,40 @@
+---
+title: "Operational Lessons"
+description: "Reusable platform lessons extracted from operating a multi-service VPS; no live topology or settings are included."
+---
+
+## Control-plane truth
+
+When a platform changes from Compose to Swarm, declare which model is authoritative. Keep retained Compose definitions clearly labeled as local-development or rollback references; they are not interchangeable with active stack definitions. Deploy a complete stack through its supported entry point so shared networks, secrets, and dependencies are handled consistently.
+
+## Boundaries that proved useful
+
+- **Edge proxy:** public TLS termination, host routing, and carefully scoped access middleware.
+- **API gateway:** API authentication policies, rate limits, and compatibility routes.
+- **Workloads:** application behavior, with only required data-service connectivity.
+- **Private operations plane:** administration and monitoring reachable through an approved private access path.
+- **Delivery:** build and publish a versioned image, then deploy it deliberately; make rollback a documented operation.
+
+These roles can share software in a small deployment, but their responsibilities and access policies should remain explicit.
+
+## Stateful-service operations
+
+Classify services as stateful or rebuildable before enabling update automation. A healthy container is not proof that its data is backed up. For every important dataset, document its backup destination, encryption, cadence, retention, integrity check, restore procedure, and most recent restore evidence.
+
+State recovery targets honestly. If backup frequency cannot meet the stated RPO, or a dataset lacks off-host coverage, record the gap instead of presenting the target as achieved. Prune backups only after the new set has passed integrity checks.
+
+## Logging and access
+
+Logs can contain credentials even when request headers are dropped; query parameters may still carry secrets. Minimize sensitive fields, restrict log access, and set retention from the residual risk. Treat public application routes and administrator routes as different exposure classes.
+
+## Evidence standard
+
+For each runnable example, keep a short record of:
+
+1. the intended behavior and the environment tested;
+2. the command or check used and its observed result;
+3. the rollback path and any remaining limitation.
+
+Do not copy production files, history, addresses, hostnames, customer data, or credentials into this reference.
+
+See the [Compose-to-Swarm case study](/case-study-compose-to-swarm) for the migration boundary and its single-host limitation.

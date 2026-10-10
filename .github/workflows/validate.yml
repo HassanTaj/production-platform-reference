@@ -1,0 +1,18 @@
+name: Validate local platform demos
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and exercise the local stack
+        run: bash demo/smoke-test.sh
+      - name: Build and exercise the one-node Swarm stack
+        run: bash demo/swarm-smoke-test.sh

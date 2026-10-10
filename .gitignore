@@ -1,0 +1,6 @@
+demo/secrets/db_password.txt
+**/.env
+**/bin/
+**/obj/
+.dotnet-home/
+.nuget/

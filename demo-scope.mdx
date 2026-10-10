@@ -1,0 +1,17 @@
+---
+title: "Demo Scope"
+description: "Runnable behavior, verification, and boundaries of the local platform exercises."
+---
+
+## What runs here
+
+- `demo/compose.yaml` runs Traefik, the .NET API, and PostgreSQL as a loopback-only Compose stack.
+- `demo/swarm-stack.yaml` runs the API and PostgreSQL as a one-node Swarm stack. Its service ports are not published; its smoke script reaches them through a temporary attachable overlay.
+- Both exercises verify readiness, create responses and their `Location` URLs, per-note and list reads, and input validation. The Swarm exercise also delivers a Docker secret and checks the database-backed request path.
+- GitHub Actions runs both smoke tests on pushes and pull requests.
+
+## Boundaries
+
+These examples use synthetic data, local containers, and disposable resources. They do not publish images, configure public TLS, deploy to a VPS, establish high availability, or prove production backup/rollback. The Swarm smoke test refuses to run if the local Docker engine is already in Swarm mode so it cannot join or alter an existing cluster.
+
+The platform architecture and operational lessons are source-derived but sanitized. No production configuration, history, credentials, customer data, or live topology is included.

@@ -1,0 +1,12 @@
+http:
+  routers:
+    platform-api:
+      rule: "Host(`platform.localhost`)"
+      entryPoints:
+        - web
+      service: platform-api
+  services:
+    platform-api:
+      loadBalancer:
+        servers:
+          - url: "http://api:8080"

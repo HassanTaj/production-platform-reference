@@ -1,0 +1,22 @@
+---
+title: "Production Platform Reference"
+description: "A clear, small reference for designing and operating a multi-service container platform."
+---
+
+This project documents reusable platform patterns drawn from operating real services, with examples redesigned for public learning.
+
+## What it covers
+
+- Container orchestration and service networking.
+- Edge ingress, TLS, and API gateway responsibilities.
+- Public and private service boundaries.
+- CI/CD, registries, data services, monitoring, backups, and rollback.
+- Operational decisions, failures, and trade-offs.
+
+## Start here
+
+1. Read the [architecture](/architecture) for the intended system boundaries.
+2. Follow the [quickstart](/quickstart) to preview the documentation locally.
+3. Review [demo scope](/demo-scope) for what is runnable and what the local exercises do not claim.
+
+The repository includes a loopback-only Compose example and a one-node Swarm stack exercise. Both use the same .NET API and PostgreSQL path, synthetic data, and isolated local resources; neither deploys to the operated source environment or configures public TLS.

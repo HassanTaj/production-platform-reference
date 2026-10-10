@@ -1,0 +1,25 @@
+---
+title: "Case Study: Compose to Swarm"
+description: "A sanitized account of establishing an explicit orchestration source of truth and dependency-aware deployments."
+---
+
+## Context
+
+A small, multi-service VPS platform had accumulated service definitions and operational procedures across several deployment paths. That made it easy for a retained Compose file, an active stack definition, and a remembered command to disagree about what was actually deployed.
+
+## Decision
+
+Docker Swarm became the active deployment control plane. Services were grouped by lifecycle and dependencies; shared foundations are deployed before edge and application workloads. Host-wide backup, restore, diagnostics, and systemd responsibilities remain distinct from stack definitions.
+
+Compose material was retained only where it serves local development, compatibility, or a carefully reviewed rollback reference. It is not silently treated as the active production configuration.
+
+## Operational trade-offs
+
+- A reconciled service scheduler and Swarm secrets improve deployment consistency and configuration boundaries.
+- Stack decomposition makes ordering and ownership more explicit, but introduces an operating model that contributors must understand.
+- A single-node Swarm is still a single-host failure domain. Moving from Compose to Swarm did not create high availability or eliminate host recovery work.
+- A rollback path must be tested against current manifests, environment resolution, and data mappings; keeping old files is not proof that rollback works.
+
+## Evidence and limits
+
+The result is a clearer, actively used orchestration model and documented deployment ordering. No quantified uptime, recovery-time improvement, or multi-host resilience is claimed here. This public example uses no copied stack files, hostnames, addresses, secrets, or service-specific production topology.

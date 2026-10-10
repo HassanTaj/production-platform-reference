@@ -1,0 +1,44 @@
+---
+title: "Quickstart"
+description: "Preview the docs locally and see what this reference repository can currently run."
+---
+
+## Preview the docs
+
+Install Git and Node.js 20.17 or newer, then run:
+
+```bash
+git clone https://github.com/HassanTaj/production-platform-reference.git
+cd production-platform-reference
+npm install --global mint
+mint dev
+```
+
+Open [http://localhost:3000](http://localhost:3000). Stop the preview with `Ctrl+C`.
+
+## Run the local platform slice
+
+This repository includes a loopback-only Compose demo with Traefik, a .NET API, and PostgreSQL. It does not contact a VPS or expose a public endpoint. From the repository root, create a password file and start it:
+
+```bash
+mkdir -p demo/secrets
+openssl rand -hex 32 > demo/secrets/db_password.txt
+docker compose -f demo/compose.yaml up --build --detach
+```
+
+On PowerShell, replace the first two commands with:
+
+```powershell
+New-Item -ItemType Directory -Force demo/secrets | Out-Null
+[guid]::NewGuid().ToString('N') | Set-Content -Encoding ascii -NoNewline demo/secrets/db_password.txt
+```
+
+Smoke-test the routed readiness endpoint with `curl -H "Host: platform.localhost" http://127.0.0.1:8080/health/ready` (use `curl.exe` on Windows). Stop with `docker compose -f demo/compose.yaml down`. The database volume remains; add `--volumes` only when you intentionally want to erase this demo's local data.
+
+This is a learning reference, not a production deployment. The Compose and one-node Swarm demos use synthetic data, local-only test paths, and disposable resources. They do not configure real TLS, publish application images, deploy to a VPS, or establish production backup or rollback. Review secrets, exposure, persistence, health checks, backup, and rollback before adapting any pattern to a real host.
+
+Run the ephemeral end-to-end smoke test from Bash with `bash demo/smoke-test.sh`. It uses a unique Compose project, verifies readiness plus create/Location/read, list, and validation behavior, then removes that project's containers, networks, volume, locally built image, and any password file it created.
+
+## Exercise the one-node Swarm stack
+
+With Docker Engine running and Swarm inactive, run `bash demo/swarm-smoke-test.sh` from Bash (Git Bash on Windows) with OpenSSL installed. The script initializes a local Swarm only if it is inactive, refuses to join or deploy into an existing Swarm, and tears down the stack, secret, overlay network, volume, image, and the Swarm it initialized. It tests readiness, create/Location/read, list, and validation across an isolated overlay; no service port is published. Do not interrupt the script forcefully while it is cleaning up.

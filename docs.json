@@ -1,0 +1,19 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "Production Platform Reference",
+  "theme": "mint",
+  "description": "A production-oriented reference for container platforms, ingress, APIs, delivery, and operations.",
+  "colors": {
+    "primary": "#2563EB",
+    "light": "#60A5FA",
+    "dark": "#1D4ED8"
+  },
+  "navigation": {
+    "groups": [
+      {
+        "group": "Start here",
+        "pages": ["index", "quickstart", "architecture", "operational-lessons", "case-study-compose-to-swarm", "demo-scope"]
+      }
+    ]
+  }
+}
